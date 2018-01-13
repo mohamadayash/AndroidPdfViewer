@@ -189,26 +189,49 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        if (!pdfView.isSwipeEnabled()) {
-            return false;
+        boolean result = false;
+        try {
+            float diffY = e2.getY() - e1.getY();
+            float diffX = e2.getX() - e1.getX();
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (Math.abs(diffX) > 50 && Math.abs(velocityX) > 50) {
+                    if (diffX > 0) {
+                        onSwipeRight();
+                    } else {
+                        onSwipeLeft();
+                    }
+                    result = true;
+                }
+            }
+            else if (Math.abs(diffY) > 50 && Math.abs(velocityY) > 50) {
+                if (diffY > 0) {
+                    onSwipeBottom();
+                } else {
+                    onSwipeTop();
+                }
+                result = true;
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
-        int xOffset = (int) pdfView.getCurrentXOffset();
-        int yOffset = (int) pdfView.getCurrentYOffset();
+        return result;
+    }
+    
+    private void onSwipeLeft() {
+        if (pdfView.getCurrentPage() < pdfView.getPageCount())
+            pdfView.jumpTo(pdfView.getCurrentPage()+1,true);
+    }
 
-        float minX, minY;
-        PdfFile pdfFile = pdfView.pdfFile;
-        if (pdfView.isSwipeVertical()) {
-            minX = -(pdfView.toCurrentScale(pdfFile.getMaxPageWidth()) - pdfView.getWidth());
-            minY = -(pdfFile.getDocLen(pdfView.getZoom()) - pdfView.getHeight());
-        } else {
-            minX = -(pdfFile.getDocLen(pdfView.getZoom()) - pdfView.getWidth());
-            minY = -(pdfView.toCurrentScale(pdfFile.getMaxPageHeight()) - pdfView.getHeight());
-        }
+    private void onSwipeBottom() {
+    }
 
-        animationManager.startFlingAnimation(xOffset, yOffset, (int) (velocityX), (int) (velocityY),
-                (int) minX, 0, (int) minY, 0);
+    private void onSwipeRight() {
+        if (pdfView.getCurrentPage() > 0)
+            pdfView.jumpTo(pdfView.getCurrentPage()-1,true);
+    }
 
-        return true;
+    private void onSwipeTop(){
+
     }
 
     @Override
