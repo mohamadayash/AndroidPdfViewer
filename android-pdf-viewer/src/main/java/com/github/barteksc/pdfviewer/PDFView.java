@@ -176,6 +176,8 @@ public class PDFView extends RelativeLayout {
 
     private boolean doubletapEnabled = true;
 
+    private boolean enableRTL = true;
+
     /** Pdfium core for loading and rendering PDFs */
     private PdfiumCore pdfiumCore;
 
@@ -361,6 +363,10 @@ public class PDFView extends RelativeLayout {
 
     public void setSwipeEnabled(boolean enableSwipe) {
         this.enableSwipe = enableSwipe;
+    }
+
+    public void setEnableRTL(boolean isRTL) {
+        this.enableRTL = isRTL;
     }
 
     void enableDoubletap(boolean enableDoubletap) {
@@ -691,6 +697,7 @@ public class PDFView extends RelativeLayout {
 
         this.pdfFile = pdfFile;
 
+
         if (!renderingHandlerThread.isAlive()) {
             renderingHandlerThread.start();
         }
@@ -963,6 +970,8 @@ public class PDFView extends RelativeLayout {
         return zoom != minZoom;
     }
 
+    public boolean isRTL() {return enableRTL;}
+
     private void setDefaultPage(int defaultPage) {
         this.defaultPage = defaultPage;
     }
@@ -1147,6 +1156,8 @@ public class PDFView extends RelativeLayout {
 
         private boolean enableDoubletap = true;
 
+        private boolean enableRTL = true;
+
         private OnDrawListener onDrawListener;
 
         private OnDrawListener onDrawAllListener;
@@ -1194,6 +1205,11 @@ public class PDFView extends RelativeLayout {
 
         public Configurator enableSwipe(boolean enableSwipe) {
             this.enableSwipe = enableSwipe;
+            return this;
+        }
+
+        public Configurator enableRTL(boolean isRTL) {
+            this.enableRTL = isRTL;
             return this;
         }
 
@@ -1316,6 +1332,7 @@ public class PDFView extends RelativeLayout {
             PDFView.this.setScrollHandle(scrollHandle);
             PDFView.this.enableAntialiasing(antialiasing);
             PDFView.this.setSpacing(spacing);
+            PDFView.this.setEnableRTL(enableRTL);
             PDFView.this.setPageFitPolicy(pageFitPolicy);
 
             if (pageNumbers != null) {
