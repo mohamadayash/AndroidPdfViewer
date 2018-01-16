@@ -58,6 +58,7 @@ class PdfFile {
     /** Calculated document length (width or height, depending on swipe mode) */
     private float documentLength = 0;
     private final FitPolicy pageFitPolicy;
+    private boolean isRTL;
     /**
      * The pages the user want to display in order
      * (ex: 0, 2, 2, 8, 8, 1, 1, 1)
@@ -65,7 +66,8 @@ class PdfFile {
     private int[] originalUserPages;
 
     PdfFile(PdfiumCore pdfiumCore, PdfDocument pdfDocument, FitPolicy pageFitPolicy, Size viewSize, int[] originalUserPages,
-            boolean isVertical, int spacing) {
+            boolean isVertical,boolean isRTL, int spacing) {
+        this.isRTL = isRTL;
         this.pdfiumCore = pdfiumCore;
         this.pdfDocument = pdfDocument;
         this.pageFitPolicy = pageFitPolicy;
@@ -82,7 +84,7 @@ class PdfFile {
             pagesCount = pdfiumCore.getPageCount(pdfDocument);
         }
 
-        for (int i = 0; i < pagesCount; i++) {
+        for (int i=0; i < pagesCount; i++) {
             Size pageSize = pdfiumCore.getPageSize(pdfDocument, documentPage(i));
             if (pageSize.getWidth() > originalMaxWidthPageSize.getWidth()) {
                 originalMaxWidthPageSize = pageSize;
@@ -294,7 +296,12 @@ class PdfFile {
                 return getPagesCount() - 1;
             }
         }
-        return userPage;
+
+        if (isRTL){
+            return getPagesCount() -userPage -1;
+        }else{
+            return userPage;
+        }
     }
 
     public int documentPage(int userPage) {
@@ -311,7 +318,13 @@ class PdfFile {
             return -1;
         }
 
-        return documentPage;
+        if (isRTL){
+            return getPagesCount() -documentPage -1;
+        }else{
+            return documentPage;
+        }
+
+
     }
 
 }
