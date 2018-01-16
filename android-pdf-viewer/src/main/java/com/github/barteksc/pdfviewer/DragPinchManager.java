@@ -194,7 +194,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
             float diffY = e2.getY() - e1.getY();
             float diffX = e2.getX() - e1.getX();
             if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > 50 && Math.abs(velocityX) > 50) {
+                if (Math.abs(diffX) > 100 && Math.abs(velocityX) > 100) {
                     if (diffX > 0) {
                         onSwipeRight();
                     } else {
@@ -203,7 +203,7 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
                     result = true;
                 }
             }
-            else if (Math.abs(diffY) > 50 && Math.abs(velocityY) > 50) {
+            else if (Math.abs(diffY) > 100 && Math.abs(velocityY) > 100) {
                 if (diffY > 0) {
                     onSwipeBottom();
                 } else {
@@ -216,22 +216,51 @@ class DragPinchManager implements GestureDetector.OnGestureListener, GestureDete
         }
         return result;
     }
-    
-    private void onSwipeLeft() {
-        if (pdfView.getCurrentPage() < pdfView.getPageCount())
-            pdfView.jumpTo(pdfView.getCurrentPage()+1,true);
-    }
 
-    private void onSwipeBottom() {
+    private void onSwipeLeft() {
+        if (pdfView.isSwipeVertical())
+            return;
+
+        if (pdfView.isRTL()) {
+            if (pdfView.getCurrentPage() > 0)
+                pdfView.jumpTo(pdfView.getCurrentPage() - 1, true);
+        }else{
+            if (pdfView.getCurrentPage() < pdfView.getPageCount())
+                pdfView.jumpTo(pdfView.getCurrentPage()+1,true);
+        }
     }
 
     private void onSwipeRight() {
+        if (pdfView.isSwipeVertical())
+            return;
+
+
+        if (pdfView.isRTL()){
+            if (pdfView.getCurrentPage() < pdfView.getPageCount())
+                pdfView.jumpTo(pdfView.getCurrentPage()+1,true);
+        }else{
+            if (pdfView.getCurrentPage() > 0)
+                pdfView.jumpTo(pdfView.getCurrentPage()-1,true);
+        }
+
+    }
+
+    private void onSwipeBottom() {
+        if (!pdfView.isSwipeVertical())
+            return;
+
         if (pdfView.getCurrentPage() > 0)
             pdfView.jumpTo(pdfView.getCurrentPage()-1,true);
     }
 
-    private void onSwipeTop(){
 
+
+    private void onSwipeTop(){
+        if (!pdfView.isSwipeVertical())
+            return;
+
+        if (pdfView.getCurrentPage() < pdfView.getPageCount())
+            pdfView.jumpTo(pdfView.getCurrentPage()+1,true);
     }
 
     @Override
